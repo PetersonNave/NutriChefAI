@@ -1,3 +1,40 @@
+# Projeto: Gerador de Receitas com API GeminiAI 🍳
+
+Este é um projeto desenvolvido para a disciplina **Desenvolvimento de Software CIN-0136**. Ele utiliza a API da **GeminiAI** para gerar receitas criativas com base nos ingredientes informados pelo usuário. O projeto foi construído utilizando **Next.js**  e está hospedado na plataforma **Vercel**.
+
+---
+
+## 🛠 Tecnologias Utilizadas
+- **Next.js**: Framework React para renderização do lado do cliente e servidor.
+- **Vercel**: Hospedagem e deployment contínuo.
+- **GeminiAI API**: Serviço para geração de receitas.
+
+---
+
+## 📦 Funcionalidades
+- Input do usuário para descrição dos ingredientes.
+- Consumo da API GeminiAI para processamento e criação das receitas.
+- Interface amigável e responsiva.
+
+---
+
+## 🚀 Como Rodar o Projeto Localmente
+
+### Pré-requisitos
+Certifique-se de ter instalado:
+- **Node.js** (versão 16 ou superior)
+- **NPM** ou **Yarn**
+
+### Passo a Passo
+
+1. **Clone o repositório**:
+   ```bash
+   git clone https://github.com/usuario/projeto-receitas.git
+   cd projeto-receitas
+
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
