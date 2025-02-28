@@ -4,7 +4,7 @@ import {clearJson} from "./convertJson"
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
   // Configura a API do Google Generative AI
-  const apiKey = `${process.env.NEXT_PUBLIC_GEMINI_APIKEY}`
+  const apiKey = `AIzaSyCDxvmMb3rED1qr5cNsGKwLoPAL9OxkOcI`
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
