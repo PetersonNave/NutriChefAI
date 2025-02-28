@@ -47,7 +47,7 @@ export default function RecipeGenerate() {
   };
 
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "Olá! Como posso ajudar?", geminiAI: null, nutrition: null }
+    { role: "bot", text: "Olá! 👋 Eu sou o assistente de receitas. Para começar, envie os ingredientes que você tem disponíveis, separados por ponto e vírgula (;), e eu vou ajudar a encontrar uma receita para você! 😊 Exemplo: “farinha; açúcar; ovos; leite” Estou aguardando os seus ingredientes! 🍽️", geminiAI: null, nutrition: null }
   ]);
 
 
