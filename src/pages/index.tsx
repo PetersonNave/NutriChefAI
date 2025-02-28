@@ -7,6 +7,7 @@ import Layout from "@/components/layout";
 import RecipeGenerate from "@/components/RecipeGenerate";
 
 
+
 const Receitas = () =>{
  
     return (
