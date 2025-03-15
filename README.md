@@ -71,3 +71,83 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
 - [Pedro Sarmento <phsp>](https://github.com/PedroSarment)
 - [Peterson Jesus <pjfm>](https://github.com/Petersonnave)
 - [João Motta <jmsm3>](https://github.com/jmsmotta)
+
+# Configuração e Rotas da API
+
+## **1. Rotas da API**
+
+### **Autenticação**
+- **Registrar Usuário**
+  - Método: `POST`
+  - Endpoint: `/api/auth/register`
+  - Corpo:
+    ```json
+    {
+      "name": "Usuário Teste",
+      "email": "usuarioteste@email.com",
+      "password": "senhaSegura123"
+    }
+    ```
+
+- **Login de Usuário**
+  - Método: `POST`
+  - Endpoint: `/api/auth/login`
+  - Corpo:
+    ```json
+    {
+      "email": "usuarioteste@email.com",
+      "password": "senhaSegura123"
+    }
+    ```
+
+### **Gerenciamento de Receitas**
+- **Criar Receita** (Requer autenticação)
+  - Método: `POST`
+  - Endpoint: `/api/recipes`
+  - Cabeçalho:
+    ```json
+    {
+      "Authorization": "Bearer <jwt_token>"
+    }
+    ```
+  - Corpo:
+    ```json
+    {
+      "title": "Bolo de Cenoura",
+      "ingredients": "Cenoura, Farinha, Açúcar...",
+      "instructions": "Misture tudo e asse por 40 minutos."
+    }
+    ```
+
+- **Listar Receitas do Usuário** (Requer autenticação)
+  - Método: `GET`
+  - Endpoint: `/api/recipes`
+  - Cabeçalho:
+    ```json
+    {
+      "Authorization": "Bearer <jwt_token>"
+    }
+    ```
+
+- **Excluir Receita** (Requer autenticação)
+  - Método: `DELETE`
+  - Endpoint: `/api/recipes/{id}`
+  - Cabeçalho:
+    ```json
+    {
+      "Authorization": "Bearer <jwt_token>"
+    }
+    ```
+
+---
+
+## **2. Inicializando o Banco de Dados**
+
+   ```
+
+1. **Configurar o Prisma**
+   ```sh
+   npx prisma migrate dev --name init
+   ```
+
+Agora a API está pronta para uso! 🚀
