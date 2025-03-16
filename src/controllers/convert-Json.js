@@ -1,4 +1,4 @@
-export function clearJson(stringJson) {
+function clearJson(stringJson) {
 
     let chavesIncompletas = 0;
     let cleanText = ``;
@@ -21,11 +21,12 @@ export function clearJson(stringJson) {
       const jsonObject = JSON.parse(cleanText);
       return jsonObject;
     } catch (error) {
-      console.error("Erro ao analisar o JSON:", error);
+      throw new Error("Erro ao analisar o JSON");
+
     }
 
 
 }
-
+module.exports = clearJson;
 
 

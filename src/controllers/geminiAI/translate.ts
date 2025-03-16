@@ -1,7 +1,6 @@
-import { clearJson } from "../convert-Json";
 import { model } from "./get-recipe";
 
-
+const clearJson = require("../convert-Json.js")
 export async function translate(ingredient : string){
     let prompt = ` 
       Traduza do português brasileiro para o inglês o seguinte ingrediente culinário: ${ingredient};
