@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import  '../Styles/RecipeGenerate.css';
 
-import {getRecipe, getRecipeNutricion} from '../scripts/geminiAI';
+import {getRecipe} from '../controllers/geminiAI/get-recipe';
 import Recipe from "./Recipe";
 import NutritionTable from "./nutritionTable";
 
@@ -11,8 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Share2 } from "lucide-react";
+import { getNutrition } from "@/controllers/spoonacular/get-nutrients";
+import { getRecipeImage } from "@/controllers/serpAPI/get-image";
+import IMGselector from "./Img-selector";
 
-type Message = { role: string, text: string, geminiAI: any, nutrition: any }
+type Message = { role: string, text: string, geminiAI: any, nutrition: any , images: any }
 
 
 export default function RecipeGenerate() {
@@ -22,10 +25,10 @@ export default function RecipeGenerate() {
   // Função chamada ao clicar no botão
   const handleGenerate = async () => {
 
-    setMessages((prev) => [...prev, { role: "user", text: userIngredientes, geminiAI: null, nutrition: null }]);
+    setMessages((prev) => [...prev, { role: "user", text: userIngredientes, geminiAI: null, nutrition: null , images : null}]);
 
     console.log(messages)    
-    setMessages((prev) => [...prev, { role: "bot", text: "Aguarde enquanto a receita é gerada!", geminiAI: null, nutrition: null }]);
+    setMessages((prev) => [...prev, { role: "bot", text: "Aguarde enquanto a receita é gerada!", geminiAI: null, nutrition: null, images : null}]);
 
     console.log(messages)
 
@@ -33,10 +36,12 @@ export default function RecipeGenerate() {
     const listUserIngredients = userIngredientes.split(';')
     try {
         const response = await getRecipe(listUserIngredients);
-        const nutrition = await getRecipeNutricion(response.ingredients);
- 
+        const nutrition = await getNutrition(response.ingredients);
+        const images = await getRecipeImage(response.title);
+        console.log("Imagens retornadas pela API:", typeof(images), images);
+
         
-        setMessages((prev) => [...prev, { role: "bot", text: userIngredientes, geminiAI: response, nutrition: nutrition }]);
+        setMessages((prev) => [...prev, { role: "bot", text: userIngredientes, geminiAI: response, nutrition: nutrition, images : images}]);
 
         setUserIngredientes("");
         
@@ -47,7 +52,7 @@ export default function RecipeGenerate() {
   };
 
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "Olá! 👋 Eu sou o assistente de receitas. Para começar, envie os ingredientes que você tem disponíveis, separados por ponto e vírgula (;), e eu vou ajudar a encontrar uma receita para você! 😊 Exemplo: “farinha; açúcar; ovos; leite” Estou aguardando os seus ingredientes! 🍽️", geminiAI: null, nutrition: null }
+    { role: "bot", text: "Olá! 👋 Eu sou o assistente de receitas. Para começar, envie os ingredientes que você tem disponíveis, separados por ponto e vírgula (;), e eu vou ajudar a encontrar uma receita para você! 😊 Exemplo: “farinha; açúcar; ovos; leite” Estou aguardando os seus ingredientes! 🍽️", geminiAI: null, nutrition: null, images: null }
   ]);
 
 
@@ -67,17 +72,16 @@ export default function RecipeGenerate() {
             {messages.map((msg, index) => (
               <div key={index} className={`flex mt-6 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div className={`rounded-2xl p-3 max-w-xlg ${msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}>
-                  {msg.role === "bot" &&  msg.geminiAI != null && msg.nutrition != null ? (
+                  {msg.role === "bot" &&  msg.geminiAI != null && msg.nutrition != null && msg.images != null? (
 
                     <div>
+                      
+                      <h1>{msg.geminiAI.title}</h1>
+                      <IMGselector imagesURLs = {msg.images}/>
                       <Recipe  ingredients={msg.geminiAI.ingredients} preparation={msg.geminiAI.preparation} harmonizations={msg.geminiAI.harmonizations}/>
+                      
+                      <NutritionTable nutritionData={msg.nutrition} />
 
-                      <NutritionTable 
-                        totalCalories={msg.nutrition.total.totalCalories} 
-                        totalCarb={msg.nutrition.total.totalCarb} 
-                        totalFat={msg.nutrition.total.totalFat} 
-                        totalProtein={msg.nutrition.total.totalProtein} 
-                      />
 
                     </div>
                     

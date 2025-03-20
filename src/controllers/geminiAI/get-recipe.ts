@@ -1,18 +1,16 @@
-import {clearJson} from "./convertJson"
+import {clearJson} from "../convert-Json"
+import {GoogleGenerativeAI} from "@google/generative-ai"
 
-
-const { GoogleGenerativeAI } = require("@google/generative-ai");
 
   // Configura a API do Google Generative AI
-  const apiKey = `AIzaSyCDxvmMb3rED1qr5cNsGKwLoPAL9OxkOcI`
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const genAI = new GoogleGenerativeAI("AIzaSyACvNTNOeOaoZJQbvD13vKSP3re2UjKCK4");
+export const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export async function getRecipe(ingredients : string[]) { //recebe uma lista de ingredientes
 
     // Define o prompt com base nos ingredientes
    
-   let prompt = `Crie uma receita culinária usando os seguintes ingredientes:`;
+   let prompt = `Crie uma receita culinária para uma pessoa usando os seguintes ingredientes:`;
     for (let i = 0; i < ingredients.length; i++) {
       prompt += ` ${ingredients[i]}`
     }
@@ -59,37 +57,6 @@ export async function getRecipe(ingredients : string[]) { //recebe uma lista de 
     return cleanText; 
 }
 
-export async function getRecipeNutricion(ingredients : {name: string, amount: number, unit: string;}[]){
-  let prompt = ` Forneça a quantidade de macro nutrientres (carboidrato, gordura e proteína) e calorias, dos seguintes alimentos em suas respectiva quantidades:
-  `;
-  for (let i = 0; i < ingredients.length; i++) {
-    prompt += `${ingredients[i].amount} ${ingredients[i].unit} de ${ingredients[i].name}`
-  }
-  prompt += `;\n A resposta deve ser formatada como num arquivo JSON, no seguinte modelo:
-      {
-        "nutricion" = [{
-        "name" : "ingrediente 1", 
-        "unit" : "'g' ou 'ml' ", 
-        "amount" : number, 
-        "carbohydrate" : number, 
-        "fat" : number, 
-        "protein" : number,
-        "calories" : number}
-        ],
-        "total" = {"totalCarb" : number,
-        "totalFat" : number,
-        "totalProtein" : number,
-        "totalCalories" : number,
-        }
-        }
-
-    `;
-
-  const result = await model.generateContent(prompt);
-  const cleanText = clearJson(result.response.text());
-   
-  return cleanText;
-}
 
 
 
