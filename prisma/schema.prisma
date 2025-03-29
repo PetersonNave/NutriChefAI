@@ -14,18 +14,35 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  password String
-  recipes  Recipe[]
+  id           Int           @id @default(autoincrement())
+  name         String
+  email        String        @unique
+  password     String
+
+  restrictions Restriction[]
+  favorites    Favorite[]
+  recipes      Recipe[]
+}
+
+model Restriction {
+  id     Int    @id @default(autoincrement())
+  value  String
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int
+}
+
+model Favorite {
+  id     Int    @id @default(autoincrement())
+  value  String
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int
 }
 
 model Recipe {
-  id          Int    @id @default(autoincrement())
-  title       String
-  ingredients String
+  id           Int    @id @default(autoincrement())
+  title        String
+  ingredients  String
   instructions String
-  userId      Int
-  user        User   @relation(fields: [userId], references: [id])
+  userId       Int
+  user         User   @relation(fields: [userId], references: [id])
 }

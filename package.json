@@ -8,7 +8,6 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest --runInBand"
-
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
