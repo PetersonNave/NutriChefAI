@@ -1,4 +1,15 @@
-# Testes de API para Gerenciamento de Receitas
+# Casos de Testes e Testes automatizados
+
+- [**Testes de API para Gerenciamento de Receitas**](#1-testes-de-autenticação)
+- [**Testes de Sistema**](#testes-de-sistema)
+- [**Testes unitários automatizados**](#testes-unitários-automatizados)
+
+
+## **Jest:**
+Para conferir os testes automatizados, no terminal, execute:
+```
+  npm run test
+```
 
 
 ## **1. Testes de Autenticação**
@@ -155,3 +166,74 @@ Estes testes garantem que a criação, recuperação e exclusão de receitas fun
     ```
 
 ---
+## Testes de Sistema
+
+**Título:** ListUserIngredients qualquer  
+**Nível:** Teste de sistema  
+
+### Descrição:
+A assistente de receitas espera como entrada os ingredientes separados por ponto e vírgula (;).  
+Testar entrada qualquer que não seja um ingrediente real.  
+
+**Entrada:** `"  ; ASDas ; lápis"`  
+
+**Saída esperada:** Receita com título aleatório criada pela IA, seguida das 10 primeiras imagens do Google Images sobre o título da receita gerada.  
+
+**Saída real:** "Receita" com título aleatório criada pela IA, seguida das 10 primeiras imagens do Google Images sobre o título da receita gerada e uma "tabela nutricional" com os "ingredientes listados".  
+
+**Comentários:** O teste mostrou que o sistema mantém o comportamento esperado mesmo numa situação de entrada inesperada/absurda.  
+
+---
+
+
+**Título:** ListUserIngredients vazia  
+**Nível:** Teste de sistema  
+
+### Descrição:
+A assistente de receitas espera como entrada os ingredientes separados por ponto e vírgula (;).  
+Testar entrada vazia.  
+
+**Entrada:** string vazia  
+
+**Saída esperada:** Receita com título aleatório criada pela IA, seguida das 10 primeiras imagens do Google Images sobre o título da receita gerada.  
+
+**Saída real:** Receita não foi gerada, log no console de erro indicando o erro de leitura de uma string vazia.  
+
+**Comentários:** O teste mostrou a necessidade de implementar uma resposta ao usuário quando a solicitação não foi bem-sucedida.  
+
+---
+
+## Testes Unitários automatizados
+
+**Título:** ClearJson "bem formado"  
+**Nível:** Teste unitário  
+
+### Descrição:
+A função `clearJson()` recebe como parâmetro uma string que contém uma substring que é um JSON, então ela "limpa" a string inicial e retorna um JSON com essa substring.  
+Executar `clearJson()` com um JSON "bem formado" e conferir o resultado esperado.  
+
+**Entrada:** `" {\"nome\": \"João\", \"idade\": 25} "`  
+
+**Saída esperada:** `{ nome: "João", idade: 25 }`  
+
+**Saída real:** _[Preencher resultado real]_  
+
+**Comentários:** _[Preencher comentários sobre o teste]_  
+
+---
+
+
+**Título:** ClearJson "mal formado"  
+**Nível:** Teste unitário  
+
+### Descrição:
+A função `clearJson()` recebe como parâmetro uma string que contém uma substring que é um JSON, então ela "limpa" a string inicial e retorna um JSON com essa substring.  
+Executar `clearJson()` com um JSON "mal formado" e conferir o resultado esperado.  
+
+**Entrada:** `" {\"nome\": \"Maria\", \"idade\": "`  
+
+**Saída esperada:** Lançamento de um erro `"Erro ao analisar o JSON"`  
+
+**Saída real:** Lançamento de um erro `"Erro ao analisar o JSON"`  
+
+**Comentários:** O teste demonstrou que a função tem o comportamento esperado em situações de entrada inesperada; tal comportamento é tratado de maneira apropriada.  

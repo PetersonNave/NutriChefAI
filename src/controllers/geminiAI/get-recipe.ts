@@ -1,6 +1,7 @@
-import {clearJson} from "../convert-Json"
+
 import {GoogleGenerativeAI} from "@google/generative-ai"
 
+const clearJson = require("../convert-Json.js")
 
   // Configura a API do Google Generative AI
   const genAI = new GoogleGenerativeAI("AIzaSyACvNTNOeOaoZJQbvD13vKSP3re2UjKCK4");
