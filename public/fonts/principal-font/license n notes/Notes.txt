@@ -1,7 +1,0 @@
-Notes from fontmeme.com
-
-This download is part of The AU School Handwriting Fonts, which are an English language, OpenType, variable typeface family designed specifically to meet Australian Education standards.
-
-Other variations can be found at https://fontmeme.com/fonts/search.html?q=edu+au
-
-You can also download them as a single at https://github.com/SorkinType/VICWANTSchoolhandAustralia/releases

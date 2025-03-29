@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 
-import  '../Styles/RecipeGenerate.css';
+import  '../styles/RecipeGenerate.css';
 
-import {getRecipe} from '../controllers/geminiAI/get-recipe';
+import {getRecipe} from '@/services/geminiAI/get-recipe';
 import Recipe from "./Recipe";
 import NutritionTable from "./nutritionTable";
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/input";
+import { Button } from "@/components/button";
+import { Card, CardContent } from "@/components/card";
+import { ScrollArea } from "@/components/scroll-area";
 import { Send, Share2 } from "lucide-react";
-import { getNutrition } from "@/controllers/spoonacular/get-nutrients";
-import { getRecipeImage } from "@/controllers/serpAPI/get-image";
+import { getNutrition } from "@/services/spoonacular/get-nutrients";
+import { getRecipeImage } from "@/services/serpAPI/get-image";
 import IMGselector from "./Img-selector";
 
 type Message = { role: string, text: string, geminiAI: any, nutrition: any , images: any }

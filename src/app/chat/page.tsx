@@ -1,11 +1,10 @@
 'use client'
 import React from "react";
-import '../Styles/globals.css';
+import '@/styles/globals.css';
 
 // components imports
-import Layout from "@/components/layout";
-import RecipeGenerate from "@/components/RecipeGenerate";
-
+import RecipeGenerate from "../../components/RecipeGenerate";
+import Layout from "@/layouts/layout";
 
 
 const Receitas = () =>{

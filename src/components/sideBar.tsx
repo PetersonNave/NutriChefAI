@@ -1,4 +1,4 @@
-import '../Styles/sideBar.css';
+import '../styles/sideBar.css';
 import Link from "next/link"
 
 export default function SideBar(){

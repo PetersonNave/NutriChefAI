@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
-import SideBar from './sideBar'; // Importando com a convenção PascalCase (opcional)
-import  '../Styles/layout.css';
+import SideBar from '@/components/sideBar'; // Importando com a convenção PascalCase (opcional)
+import  '@/styles/layout.css';
 import { Card, CardContent } from "@/components/card";
 import { ScrollArea } from "@/components/scroll-area";
 import { useState } from "react";
