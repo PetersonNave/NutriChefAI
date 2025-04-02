@@ -1,39 +1,25 @@
-import React, { ReactNode } from 'react';
-import SideBar from '@/components/sideBar'; // Importando com a convenção PascalCase (opcional)
-import  '@/styles/layout.css';
-import { Card, CardContent } from "@/components/card";
-import { ScrollArea } from "@/components/scroll-area";
-import { useState } from "react";
+"use client";
 
+import React, { ReactNode, useState } from 'react';
+import '@/styles/layout.css';
+import Sidebar from '@/components/sideBar';
 
-type Props = {children: ReactNode;};
+type Props = { children: ReactNode };
 
 export default function Layout({ children }: Props) {
 
-  const [input, setInput] = useState("");
-  const [history, setHistory] = useState(["Receita 1",]);
-  
-  
-  return ( 
-    <div className="flex h-screen w-full">
+  const user = {
+    name: "Pedro"
+  };
 
-      {/* Sidebar */}
-      <div className="w-64 bg-gray-100 p-4 border-r flex flex-col">
-        <h2 className="text-lg font-bold mb-4">Histórico</h2>
-        <ScrollArea className="space-y-2 flex-1">
-          {history.map((chat, index) => (
-            <Card key={index} className="cursor-pointer hover:bg-gray-300 transition">
-              <CardContent className="p-3 text-sm font-medium">
-                {chat}
-              </CardContent>
-            </Card>
-          ))}
-        </ScrollArea>
-      </div>
-
-      <div className="flex flex-col flex-1">{children}</div>
-
-
+  return (
+    <div className="flex h-screen w-full bg-gradient-to-br from-orange-50 to-white">
+      
+      <Sidebar />
+    
+      <main className="flex flex-col flex-1 overflow-hidden">
+        {children}
+      </main>
     </div>
   );
 }
