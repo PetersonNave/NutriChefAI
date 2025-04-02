@@ -43,9 +43,9 @@ export default function RegisterPage() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erro ao cadastrar");
+      if (!res.ok) throw new Error(data.message || "Erro ao cadastrar");
 
-      router.push("/login");
+      router.push("/");
     } catch (err: any) {
       setError(err.message);
     } finally {
