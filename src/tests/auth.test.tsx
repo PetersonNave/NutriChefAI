@@ -1,7 +1,7 @@
 import loginHandler from '@/pages/api/auth/login';
 import { createMocks } from 'node-mocks-http';
 import registerHandler from '@/pages/api/auth/register';
-import prisma from '../lib/prista';
+import prisma from '../lib/prisma';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 
