@@ -1,110 +1,174 @@
-import React, { useState } from "react";
+"use client";
 
-import  '../Styles/RecipeGenerate.css';
+import React, { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import '../styles/RecipeGenerate.css';
 
-import {getRecipe} from '../controllers/geminiAI/get-recipe';
+import { getRecipe } from '@/services/geminiAI/get-recipe';
+import { getNutrition } from "@/services/spoonacular/get-nutrients";
+import { getRecipeImage } from "@/services/serpAPI/get-image";
+
 import Recipe from "./Recipe";
 import NutritionTable from "./nutritionTable";
-
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Share2 } from "lucide-react";
-import { getNutrition } from "@/controllers/spoonacular/get-nutrients";
-import { getRecipeImage } from "@/controllers/serpAPI/get-image";
 import IMGselector from "./Img-selector";
 
-type Message = { role: string, text: string, geminiAI: any, nutrition: any , images: any }
+import { Input } from "@/components/input";
+import { Button } from "@/components/button";
+import { Send } from "lucide-react";
+import { saveRecipe } from "@/services/recipeService/recipeService";
+import { authService } from "@/services/authService/authService";
 
+type Message = {
+  role: string;
+  text: string;
+  geminiAI: any;
+  nutrition: any;
+  images: any;
+};
 
 export default function RecipeGenerate() {
-  const [userIngredientes, setUserIngredientes] = useState(""); // Para capturar o valor do input
-  
-  
-  // Função chamada ao clicar no botão
+  const router = useRouter();
+  const [userIngredientes, setUserIngredientes] = useState("");
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: "bot",
+      text: "Olá! 👋 Eu sou o assistente de receitas. Envie os ingredientes que você tem disponíveis separados por ponto e vírgula (;). Ex: farinha; açúcar; leite",
+      geminiAI: null,
+      nutrition: null,
+      images: null,
+    },
+  ]);
+
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const res = authService.getToken();
+        if (!res) throw new Error("Not authenticated");
+      } catch (err) {
+        router.push("/");
+      }
+    }
+
+    checkAuth();
+  }, [router]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   const handleGenerate = async () => {
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", text: userIngredientes, geminiAI: null, nutrition: null, images: null },
+    ]);
 
-    setMessages((prev) => [...prev, { role: "user", text: userIngredientes, geminiAI: null, nutrition: null , images : null}]);
+    setMessages((prev) => [
+      ...prev,
+      { role: "bot", text: "Aguarde enquanto a receita é gerada...", geminiAI: null, nutrition: null, images: null },
+    ]);
 
-    console.log(messages)    
-    setMessages((prev) => [...prev, { role: "bot", text: "Aguarde enquanto a receita é gerada!", geminiAI: null, nutrition: null, images : null}]);
-
-    console.log(messages)
-
-
-    const listUserIngredients = userIngredientes.split(';')
+    const listUserIngredients = userIngredientes.split(';');
     try {
-        const response = await getRecipe(listUserIngredients);
-        const nutrition = await getNutrition(response.ingredients);
-        const images = await getRecipeImage(response.title);
-        console.log("Imagens retornadas pela API:", typeof(images), images);
+      const response = await getRecipe(listUserIngredients);
+      const nutrition = await getNutrition(response.ingredients);
+      const images = await getRecipeImage(response.title);
 
-        
-        setMessages((prev) => [...prev, { role: "bot", text: userIngredientes, geminiAI: response, nutrition: nutrition, images : images}]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          text: userIngredientes,
+          geminiAI: response,
+          nutrition: nutrition,
+          images: images,
+        },
+      ]);
 
-        setUserIngredientes("");
-        
+      console.log({
+        role: "bot",
+        text: userIngredientes,
+        geminiAI: response,
+        nutrition: nutrition,
+        images: images,
+      })
+
+      setUserIngredientes("");
     } catch (error) {
-        console.error("Erro ao gerar a receita:", error);
-        
+      console.error("Erro ao gerar a receita:", error);
     }
   };
 
-  const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "Olá! 👋 Eu sou o assistente de receitas. Para começar, envie os ingredientes que você tem disponíveis, separados por ponto e vírgula (;), e eu vou ajudar a encontrar uma receita para você! 😊 Exemplo: “farinha; açúcar; ovos; leite” Estou aguardando os seus ingredientes! 🍽️", geminiAI: null, nutrition: null, images: null }
-  ]);
-
-
   return (
-      <div className="flex flex-col flex-1">
-        {/* Header */}
-        <div className="p-4 border-b flex justify-between items-center bg-white shadow-md">
-          <h1 className="text-xl font-bold">NutrichefAI</h1>
-          <Button>
-            <Share2 className="h-5 w-5" />
-          </Button>
-        </div>
-
-        <Card className="flex-1 flex flex-col">
-          <CardContent className="flex-1 p-4 overflow-hidden">
-            <ScrollArea className="h-full space-y-3">
+    <div className="min-h-screen bg-gradient-to-br from-orange to-white flex flex-col">
+      <div className="flex-1 flex justify-center px-4 py-4">
+        <div className="flex-1 flex flex-col">
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
             {messages.map((msg, index) => (
-              <div key={index} className={`flex mt-6 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`rounded-2xl p-3 max-w-xlg ${msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}>
-                  {msg.role === "bot" &&  msg.geminiAI != null && msg.nutrition != null && msg.images != null? (
-
+              <div
+                key={index}
+                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`rounded-2xl p-4 max-w-[75%] whitespace-pre-line text-sm md:text-base ${
+                    msg.role === "user"
+                      ? "bg-blue-500 text-white"
+                      : "bg-white text-gray-800 shadow-lg "
+                  }`}
+                >
+                  {msg.role === "bot" && msg.geminiAI && msg.nutrition && msg.images ? (
                     <div>
-                      
-                      <h1>{msg.geminiAI.title}</h1>
-                      <IMGselector imagesURLs = {msg.images}/>
-                      <Recipe  ingredients={msg.geminiAI.ingredients} preparation={msg.geminiAI.preparation} harmonizations={msg.geminiAI.harmonizations}/>
-                      
+                      <h2 className="text-xl font-semibold mb-2">{msg.geminiAI.title}</h2>
+                      <IMGselector imagesURLs={msg.images} />
+                      <Recipe
+                        ingredients={msg.geminiAI.ingredients}
+                        preparation={msg.geminiAI.preparation}
+                        harmonizations={msg.geminiAI.harmonizations}
+                      />
                       <NutritionTable nutritionData={msg.nutrition} />
-
-
+                      <Button
+                        className="mt-4"
+                        onClick={async () => {
+                          try {
+                            await saveRecipe({
+                              title: msg.geminiAI.title,
+                              ingredients: msg.geminiAI.ingredients,
+                              preparation: msg.geminiAI.preparation,
+                              harmonizations: msg.geminiAI.harmonizations,
+                            });
+                            alert("Receita salva com sucesso!");
+                          } catch (error: any) {
+                            console.error("Erro ao salvar receita:", error);
+                            alert(error.message || "Erro ao salvar receita.");
+                          }
+                        }}
+                      >
+                        Salvar Receita
+                      </Button>
                     </div>
-                    
                   ) : (
                     msg.text
                   )}
                 </div>
               </div>
             ))}
-            </ScrollArea>
-          </CardContent>
-          <div className="p-4 border-t flex gap-2">
+            <div ref={chatEndRef} />
+          </div>
+
+          <div className="border-t p-4 flex gap-2">
             <Input
               value={userIngredientes}
               onChange={(e) => setUserIngredientes(e.target.value)}
-              placeholder="Digite sua mensagem..."
-              className="flex-1"
+              placeholder="Ex: tomate; alho; macarrão; azeite"
+              className="flex-1 text-sm md:text-base"
             />
-            <Button onClick={handleGenerate}>
+            <Button onClick={handleGenerate} className="shrink-0 px-4">
               <Send className="h-5 w-5" />
             </Button>
           </div>
-        </Card>
+        </div>
       </div>
+    </div>
   );
 }

@@ -1,9 +1,8 @@
 export async function GET(req) {
     const apiKey = "0786d3fa529bef1ff2f5cc75877a40a16581d8965d748a7f716ea82beadb42a2";
     
-    // Obtendo o parâmetro `q` da query string
     const { searchParams } = new URL(req.url);
-    const query = searchParams.get("q") || "Apple"; // Valor default: "Apple"
+    const query = searchParams.get("q") || "Apple"; 
   
     const url = `https://serpapi.com/search.json?api_key=${apiKey}&q=${encodeURIComponent(query)}&engine=google_images&ijn=0`;
   
