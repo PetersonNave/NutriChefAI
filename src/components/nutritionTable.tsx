@@ -26,7 +26,7 @@ const NutritionTable: React.FC<NutritionTableProps> = ({ nutritionData }) => {
   );
 
   return (
-    <div className="max-w-2xl mx-auto mt-8 p-4 border rounded-lg shadow-lg">
+    <div className="max-w-3xl mx-auto mt-8 p-4 border rounded-lg shadow-lg">
       <h2 className="text-xl font-semibold text-center mb-4">Tabela Nutricional</h2>
       <table className="w-full border-collapse border border-gray-300">
         <thead className="bg-gray-100">

@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
       include: {
         restrictions: true,
         favorites: true,
+        recipes: true,
       },
     });
 
@@ -60,6 +61,7 @@ export async function PUT(req: NextRequest) {
         include: {
           restrictions: true,
           favorites: true,
+          recipes: true,
         },
       });
   

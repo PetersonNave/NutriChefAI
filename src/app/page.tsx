@@ -27,13 +27,20 @@ export default function Home() {
         body: JSON.stringify({ email, password }),
       });
 
+      console.log("res", res)
+
+
       if (!res.ok) {
         const data = await res.json();
-        authService.saveToken(data.token); 
+
         throw new Error(data?.message || "Erro ao fazer login");
+      } else {
+
+        const data = await res.json();
+        authService.saveToken(data.token); 
+        router.push("/chat");
       }
 
-      router.push("/chat");
     } catch (err: any) {
       setError(err.message);
     }

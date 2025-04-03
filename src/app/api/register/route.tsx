@@ -33,7 +33,8 @@ export async function POST(req: NextRequest) {
         },
         favorites: {
           create: (favorites || []).filter((f: string) => f.trim() !== '').map((f: string) => ({ value: f }))
-        }
+        },
+        
       },
       include: {
         restrictions: true,

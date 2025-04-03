@@ -5,12 +5,14 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/card";
 import { ScrollArea } from "@/components/scroll-area";
 import { User } from "lucide-react";
+import { getUserRecipes } from "@/services/getUserRecipes/getUserRecipes";
+import { Navigation } from "lucide-react";
 
 export default function Sidebar() {
-  const [history] = useState(["Receita 1", "Receita 2", "Receita 3"]);
+  const [recipes, setRecipes] = useState<{ id: number; title: string }[]>([]);
   const [username, setUsername] = useState("");
 
-  useEffect(() => {
+  useEffect( () => {
     async function fetchUser() {
       try {
         const res = await fetch("/api/user");
@@ -22,7 +24,12 @@ export default function Sidebar() {
         console.error("Erro ao carregar nome do usuário:", error);
         setUsername("Usuário");
       }
+
+      const userRecipes = await getUserRecipes();
+      setRecipes(userRecipes);
+
     }
+
 
     fetchUser();
   }, []);
@@ -36,14 +43,26 @@ export default function Sidebar() {
         
         <ScrollArea className="h-[65vh] pr-1">
           <div className="flex flex-col gap-3">
-            {history.map((chat, index) => (
+            <Card
+                className="cursor-pointer hover:bg-gray-100 border border-gray-200 transition"
+              >
+                <Link href={`/chat`} className="text-orange-600 hover:underline ml-2">
+                  <CardContent className="p-3 text-sm font-medium text-gray-800">
+                    Nova Receita
+                  </CardContent>
+                </Link>
+              </Card>
+            {recipes.map((recipe, index) => (
+              
               <Card
                 key={index}
                 className="cursor-pointer hover:bg-gray-100 border border-gray-200 transition"
               >
-                <CardContent className="p-3 text-sm font-medium text-gray-800">
-                  {chat}
-                </CardContent>
+                <Link href={`/recipe/${recipe.id}`} className="text-orange-600 hover:underline ml-2">
+                  <CardContent className="p-3 text-sm font-medium text-gray-800">
+                    {recipe.title}
+                  </CardContent>
+                </Link>
               </Card>
             ))}
           </div>
