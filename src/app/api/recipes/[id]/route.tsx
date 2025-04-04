@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import jwt from 'jsonwebtoken';
 
-export async function GET(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const token = req.cookies.get('token')?.value;
 
@@ -15,7 +12,7 @@ export async function GET(
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: number };
 
-    const { id } = context.params;
+    const {id} = await params;
 
     const recipe = await prisma.recipe.findUnique({
       where: {
@@ -29,7 +26,7 @@ export async function GET(
         user: true,
       },
     });
-
+    
     if (!recipe || recipe.userId !== decoded.userId) {
       return NextResponse.json({ message: 'Receita não encontrada ou acesso negado' }, { status: 404 });
     }
