@@ -1,7 +1,7 @@
 import { createMocks } from 'node-mocks-http';
 import handler from '@/pages/api/recipes/index';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import prisma from '../lib/prista';
+import prisma from '../lib/prisma';
 
 describe('Recipes API', () => {
     let userToken: string;
