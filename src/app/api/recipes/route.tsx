@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET_BY_ID(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET_BY_ID(req: NextRequest, { params }: any) {
   try {
     const token = req.cookies.get('token')?.value;
 
