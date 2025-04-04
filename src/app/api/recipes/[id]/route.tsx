@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import jwt from 'jsonwebtoken';
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  req: NextRequest,
+  context: { params: { id: string } }
+) {
   try {
     const token = req.cookies.get('token')?.value;
 
@@ -12,7 +15,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: number };
 
-    const {id} = await params;
+    const { id } = context.params;
 
     const recipe = await prisma.recipe.findUnique({
       where: {
