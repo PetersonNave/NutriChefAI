@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { Card } from "@/components/card";
+import IMGRender from "./img-render";
 
 interface IMGselectorProps {
   imagesURLs: string[];
+  selectedImage: string | null;
+  setSelectedImage: React.Dispatch<React.SetStateAction<string | null>>
 }
 
-export default function IMGselector({ imagesURLs }: IMGselectorProps) {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-
+export default function IMGselector({ imagesURLs, selectedImage, setSelectedImage }: IMGselectorProps) {
   if (!Array.isArray(imagesURLs) || imagesURLs.length === 0) {
     return null;
   }
@@ -33,14 +34,10 @@ export default function IMGselector({ imagesURLs }: IMGselectorProps) {
           </div>
         </Card>
       ) : (
-        <div className="relative">
-          <img
-            src={selectedImage}
-            alt="Imagem selecionada"
-            className="rounded-lg shadow-md cursor-pointer max-h-[300px] mx-auto"
-            onClick={() => setSelectedImage(null)}
-          />
+        <div className="relative" onClick={() => setSelectedImage(null)}>
+          <IMGRender imageSrc={selectedImage}/>
         </div>
+       
       )}
     </div>
   );

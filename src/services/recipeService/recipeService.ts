@@ -5,9 +5,10 @@ export async function saveRecipe(recipe: {
   ingredients: any;
   preparation: any;
   harmonizations?: any;
+  images?: any
 }) {
   const token = authService.getToken();
-
+  
   if (!token) {
     throw new Error("Usuário não autenticado.");
   }

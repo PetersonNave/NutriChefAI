@@ -69,10 +69,10 @@ export async function POST(req: NextRequest) {
           })) ?? [],
         },
         images: {
-          create: [
-            {url: ""}
-          ]
-        },
+          create: images.map((item: any) => ({
+            url: item,
+          })),
+        }
       } 
 
       //return NextResponse.json(data, { status: 201 });

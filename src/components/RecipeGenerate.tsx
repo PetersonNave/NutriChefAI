@@ -29,6 +29,8 @@ type Message = {
 export default function RecipeGenerate() {
   const router = useRouter();
   const [userIngredientes, setUserIngredientes] = useState("");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "bot",
@@ -72,9 +74,28 @@ export default function RecipeGenerate() {
     const listUserIngredients = userIngredientes.split(';');
     try {
       const response = await getRecipe(listUserIngredients);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          text: `Hmmmm... Estamos preparando uma bela receita de "${response.title}" para você!!!`,
+          geminiAI: null,
+          nutrition: null,
+          images: null,
+        },
+      ]);
       const nutrition = await getNutrition(response.ingredients);
       const images = await getRecipeImage(response.title);
-
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          text: `Aqui está! Aproveite!!!`,
+          geminiAI: null,
+          nutrition: null,
+          images: null,
+        },
+      ]);
       setMessages((prev) => [
         ...prev,
         {
@@ -108,7 +129,7 @@ export default function RecipeGenerate() {
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex fade-in-chat  ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
                   className={`rounded-2xl p-4 max-w-[75%] whitespace-pre-line text-sm md:text-base ${
@@ -120,7 +141,7 @@ export default function RecipeGenerate() {
                   {msg.role === "bot" && msg.geminiAI && msg.nutrition && msg.images ? (
                     <div>
                       <h2 className="text-xl font-semibold mb-2">{msg.geminiAI.title}</h2>
-                      <IMGselector imagesURLs={msg.images} />
+                      <IMGselector selectedImage={selectedImage} setSelectedImage={setSelectedImage} imagesURLs={msg.images} />
                       <Recipe
                         ingredients={msg.geminiAI.ingredients}
                         preparation={msg.geminiAI.preparation}
@@ -136,8 +157,10 @@ export default function RecipeGenerate() {
                               ingredients: msg.geminiAI.ingredients,
                               preparation: msg.geminiAI.preparation,
                               harmonizations: msg.geminiAI.harmonizations,
+                              images: selectedImage ? [selectedImage] : [messages[Number(index)].images[0]]
                             });
                             alert("Receita salva com sucesso!");
+                            window.location.reload();
                           } catch (error: any) {
                             console.error("Erro ao salvar receita:", error);
                             alert(error.message || "Erro ao salvar receita.");

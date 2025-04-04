@@ -43,27 +43,28 @@ export default function Sidebar() {
         
         <ScrollArea className="h-[65vh] pr-1">
           <div className="flex flex-col gap-3">
+            <Link href={`/chat`}  className="text-orange-600 hover:underline ml-2">
             <Card
-                className="cursor-pointer hover:bg-gray-100 border border-gray-200 transition"
+                className="cursor-pointer hover:bg-green-200 border border-gray-200 transition bg-green-300"
+                
               >
-                <Link href={`/chat`} className="text-orange-600 hover:underline ml-2">
                   <CardContent className="p-3 text-sm font-medium text-gray-800">
                     Nova Receita
                   </CardContent>
-                </Link>
               </Card>
+                </Link>
             {recipes.map((recipe, index) => (
               
+              <Link href={`/recipe/${recipe.id}`} className="text-orange-600 hover:underline ml-2">
               <Card
                 key={index}
                 className="cursor-pointer hover:bg-gray-100 border border-gray-200 transition"
               >
-                <Link href={`/recipe/${recipe.id}`} className="text-orange-600 hover:underline ml-2">
                   <CardContent className="p-3 text-sm font-medium text-gray-800">
                     {recipe.title}
                   </CardContent>
-                </Link>
               </Card>
+                </Link>
             ))}
           </div>
         </ScrollArea>
