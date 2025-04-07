@@ -1,139 +1,97 @@
-import { createMocks } from 'node-mocks-http';
-import handler from '@/pages/api/recipes/index';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { GET } from '../app/api/recipes/[id]/route';
+import { NextRequest } from 'next/server';
 import prisma from '../lib/prisma';
+import jwt from 'jsonwebtoken';
 
-describe('Recipes API', () => {
-    let userToken: string;
-    let recipeId: number;
-  
-    beforeAll(async () => {
-      await prisma.recipe.deleteMany();
-      await prisma.user.deleteMany();
-  
-      const user = await prisma.user.create({
-        data: {
-          name: 'Recipe Tester',
-          email: 'recipetester@email.com',
-          password: '$2a$10$encryptedpasswordhash', // Simulating bcrypt hash
-        },
-      });
-  
-      const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'POST',
-        body: { email: 'recipetester@email.com', password: 'securepassword123' },
-      });
-  
-      await handler(req, res);
-      userToken = JSON.parse(res._getData()).token;
-    });
-  
-    it('should allow an authenticated user to create a recipe', async () => {
-      const recipeData = {
-        title: 'Bolo de Cenoura',
-        ingredients: 'Cenoura, Farinha, Açúcar...',
-        instructions: 'Misture tudo e asse por 40 minutos.',
-      };
-  
-      const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'POST',
-        headers: { Authorization: `Bearer ${userToken}` },
-        body: recipeData,
-      });
-  
-      await handler(req, res);
-  
-      expect(res._getStatusCode()).toBe(201);
-      const responseBody = JSON.parse(res._getData());
-      expect(responseBody).toMatchObject({
-        id: expect.any(Number),
-        title: recipeData.title,
-        ingredients: recipeData.ingredients,
-        instructions: recipeData.instructions,
-        userId: expect.any(Number), // Ensuring the response contains the userId
-      });
-  
-      recipeId = responseBody.id; // Store the created recipe ID for future tests
-    });
-  
-    it('should return an error if a required field is missing', async () => {
-      const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'POST',
-        headers: { Authorization: `Bearer ${userToken}` },
-        body: {
-          title: '',
-          ingredients: 'Cenoura, Farinha, Açúcar...',
-          instructions: 'Misture tudo e asse por 40 minutos.',
-        },
-      });
-  
-      await handler(req, res);
-  
-      expect(res._getStatusCode()).toBe(400);
-      expect(JSON.parse(res._getData())).toHaveProperty('message', 'All fields are required');
-    });
-  
-    it('should not allow creating a recipe without authentication', async () => {
-      const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'POST',
-        body: {
-          title: 'Unauthorized Recipe',
-          ingredients: 'Unknown',
-          instructions: 'No instructions available',
-        },
-      });
-  
-      await handler(req, res);
-  
-      expect(res._getStatusCode()).toBe(401);
-      expect(JSON.parse(res._getData())).toHaveProperty('message', 'Token not provided');
-    });
-  
-    it('should return only recipes belonging to the authenticated user', async () => {
-      const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'GET',
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-  
-      await handler(req, res);
-  
-      expect(res._getStatusCode()).toBe(200);
-      const responseBody = JSON.parse(res._getData());
-      expect(responseBody.length).toBeGreaterThan(0);
-      expect(responseBody[0]).toMatchObject({
-        id: expect.any(Number),
-        title: 'Bolo de Cenoura',
-        ingredients: 'Cenoura, Farinha, Açúcar...',
-        instructions: 'Misture tudo e asse por 40 minutos.',
-        userId: expect.any(Number),
-      });
-    });
-  
-    it('should not allow retrieving recipes without authentication', async () => {
-      const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'GET',
-      });
-  
-      await handler(req, res);
-  
-      expect(res._getStatusCode()).toBe(401);
-      expect(JSON.parse(res._getData())).toHaveProperty('message', 'Token not provided');
-    });
-  
-    it('should allow an authenticated user to delete their recipe', async () => {
-      const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${userToken}` },
-        query: { id: recipeId.toString() },
-      });
-  
-      await handler(req, res);
-  
-      expect(res._getStatusCode()).toBe(200);
-      expect(JSON.parse(res._getData())).toHaveProperty('message', 'Recipe successfully deleted');
-    });
-  
-    afterAll(async () => {
-      await prisma.$disconnect();
-    });
+jest.mock('../lib/prisma', () => ({
+  recipe: {
+    findUnique: jest.fn(),
+  },
+}));
+
+jest.mock('jsonwebtoken', () => ({
+  verify: jest.fn(),
+}));
+
+function createMockRequest(token: string | null, params: { id: string }): NextRequest {
+  return {
+    cookies: {
+      get: (key: string) => (key === 'token' && token ? { value: token } : undefined),
+    },
+  } as unknown as NextRequest;
+}
+
+describe('GET /api/recipes/[id]', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
   });
+
+  it('retorna 401 se não houver token', async () => {
+    const req = createMockRequest(null, { id: '1' });
+    const res = await GET(req, { params: { id: '1' } });
+    const json = await res.json();
+
+    expect(res.status).toBe(401);
+    expect(json.message).toBe('Não autenticado');
+  });
+
+  it('retorna 404 se a receita não existir ou não pertencer ao usuário', async () => {
+    (jwt.verify as jest.Mock).mockReturnValue({ userId: 99 });
+    (prisma.recipe.findUnique as jest.Mock).mockResolvedValue(null);
+
+    const req = createMockRequest('fake-token', { id: '123' });
+    const res = await GET(req, { params: { id: '123' } });
+    const json = await res.json();
+
+    expect(res.status).toBe(404);
+    expect(json.message).toBe('Receita não encontrada ou acesso negado');
+  });
+
+  it('retorna 404 se a receita não for do usuário logado', async () => {
+    (jwt.verify as jest.Mock).mockReturnValue({ userId: 1 });
+    (prisma.recipe.findUnique as jest.Mock).mockResolvedValue({ id: 123, userId: 2 });
+
+    const req = createMockRequest('fake-token', { id: '123' });
+    const res = await GET(req, { params: { id: '123' } });
+    const json = await res.json();
+
+    expect(res.status).toBe(404);
+    expect(json.message).toBe('Receita não encontrada ou acesso negado');
+  });
+
+  it('retorna a receita corretamente se o usuário for autorizado', async () => {
+    const fakeRecipe = {
+      id: 123,
+      userId: 1,
+      ingredients: [],
+      preparation: [],
+      harmonizations: [],
+      images: [],
+      user: { id: 1, name: 'Pedro' },
+    };
+
+    (jwt.verify as jest.Mock).mockReturnValue({ userId: 1 });
+    (prisma.recipe.findUnique as jest.Mock).mockResolvedValue(fakeRecipe);
+
+    const req = createMockRequest('valid-token', { id: '123' });
+    const res = await GET(req, { params: { id: '123' } });
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.id).toBe(123);
+    expect(json.user.name).toBe('Pedro');
+  });
+
+  it('retorna 500 em erro inesperado', async () => {
+    (jwt.verify as jest.Mock).mockImplementation(() => {
+      throw new Error('Token inválido');
+    });
+
+    const req = createMockRequest('invalid-token', { id: '123' });
+    const res = await GET(req, { params: { id: '123' } });
+    const json = await res.json();
+
+    expect(res.status).toBe(500);
+    expect(json.message).toBe('Erro interno no servidor');
+  });
+});
