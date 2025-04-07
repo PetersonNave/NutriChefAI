@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import { getRecipeById } from "@/services/getRecipe/getRecipe";
+import { getRecipeById } from "@/services/getRecipeById/getRecipeById";
 import Recipe from "@/components/Recipe";
 import NutritionTable from "@/components/nutritionTable";
 import IMGselector from "@/components/Img-selector";
