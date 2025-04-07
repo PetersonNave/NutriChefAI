@@ -2,6 +2,7 @@ import { getUserRecipes } from '../services/getUserRecipes/getUserRecipes';
 
 describe('getUserRecipes', () => {
   beforeEach(() => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     global.fetch = jest.fn();
   });
 
