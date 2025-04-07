@@ -24,3 +24,6 @@ jobs:
 
       - name: Rodar testes
         run: npm run test
+        env:
+          DATABASE_URL: file:./dev.db"
+          JWT_SECRET: "A22u+GsRRmGInU3PvEYvhG9aVCsLqI9+2Chi4nTXsBs="
