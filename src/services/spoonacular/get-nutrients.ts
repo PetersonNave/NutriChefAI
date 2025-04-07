@@ -43,8 +43,13 @@ export async function getNutrition(ingredients: {name : string, unit : string, a
           ingredient.ptn = nutrients.find((n: NutrientAPI)  => n.name === "Protein")?.amount ?? -1;
     
         } catch (error) {
-          console.error("Erro:", error);
-        }
+            console.error("Erro:", error);
+            ingredient.cal = -1;
+            ingredient.carb = -1;
+            ingredient.fat = -1;
+            ingredient.ptn = -1;
+          }
+        
     
         return ingredient;
       })
